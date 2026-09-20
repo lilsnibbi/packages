@@ -5,13 +5,13 @@ import { isDeepStrictEqual } from "node:util";
 const root = join(import.meta.dir, "..");
 const check = process.argv.includes("--check");
 const packages = ["discord-kit", "logger", "toolkit"];
-const template = join(root, "shared/package");
+const template = join(root, "dots/templates");
 const files = (await readdir(template, { recursive: true, withFileTypes: true }))
 	.filter((entry) => entry.isFile())
 	.map((entry) => join(entry.parentPath, entry.name).slice(template.length + 1));
-const scripts = await Bun.file(join(root, "shared/package-scripts.json")).json();
-const release = await Bun.file(join(root, "shared/release-please.json")).json();
-const attributes = await Bun.file(join(root, ".gitattributes")).text();
+const scripts = await Bun.file(join(root, "dots/package-scripts.json")).json();
+const release = await Bun.file(join(root, "dots/release-please.json")).json();
+const attributes = await Bun.file(join(root, "dots/.gitattributes")).text();
 let differences = 0;
 
 async function sync(path: string, expected: string) {
@@ -31,8 +31,8 @@ async function syncJson(path: string, config: unknown) {
 	if (await current.exists()) {
 		if (isDeepStrictEqual(await current.json(), config)) return;
 	}
-	const formatter = Bun.spawn(["bun", "--no-install", "biome", "format", `--stdin-file-path=${basename(path)}`, "--config-path=shared/package"], {
-		cwd: root,
+	const formatter = Bun.spawn(["bun", "--no-install", "biome", "format", `--stdin-file-path=${basename(path)}`], {
+		cwd: join(root, "dots"),
 		stdin: new Blob([JSON.stringify(config)]),
 		stdout: "pipe",
 		stderr: "pipe",
@@ -55,6 +55,12 @@ for (const name of packages) {
 		await sync(join(name, file), await Bun.file(join(template, file)).text());
 	}
 	await sync(`${name}/.gitattributes`, attributes);
+	await syncJson(`${name}/renovate.json`, { extends: ["github>lilsnibbi/dots"] });
+	await syncJson(`${name}/biome.json`, { extends: ["@lilsnibbi/dots/biome"] });
+	await syncJson(`${name}/tsconfig.json`, {
+		extends: "@lilsnibbi/dots/tsconfig.json",
+		include: ["./src/**/*.ts", "./tests/**/*.test.ts", "./scripts/**/*.ts"],
+	});
 	const manifest = await Bun.file(join(root, name, "package.json")).json();
 	await syncJson(`${name}/package.json`, {
 		...manifest,

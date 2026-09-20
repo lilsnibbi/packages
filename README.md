@@ -1,55 +1,52 @@
 # @lilsnibbi
 
-Git superproject for three independently versioned package repositories:
-`discord-kit/`, `logger/`, and `toolkit/`. Each is a submodule with its own
-history, remote, branches, lockfile, CI, and releases.
+Git superproject for `discord-kit/`, `logger/`, `toolkit/`, and `dots/`.
+Each submodule keeps its own history, remote, branches, and repository settings.
 
 ```bash
 git clone --recurse-submodules https://github.com/lilsnibbi/packages.git
 cd packages
 bun install --frozen-lockfile
-# Install dependencies separately inside each package.
-bun run configs:check
+# Run bun install --frozen-lockfile inside each runtime package too.
 bun run check
 ```
 
 ## Shared configuration
 
-Edit `shared/package/` for common Biome, TypeScript, Git ignore/attributes,
-CI, release workflow/policy, and release verification files. Renovate uses
-the same `shared/package/renovate.json` in every package, with common tooling,
-GitHub Actions, and major-update rules.
+[dots](https://github.com/lilsnibbi/dots) owns the shared configuration:
+
+- Renovate: `default.json`, extended with `github>lilsnibbi/dots`.
+- Biome: `biome.json`, extended with `@lilsnibbi/dots/biome`.
+- TypeScript: `tsconfig.json`, extended with `@lilsnibbi/dots/tsconfig.json`.
+
+Each runtime package installs `@lilsnibbi/dots` as a Git development dependency,
+locked to a commit. Standalone clones need no parent directory or local links.
+Renovate uses the current preset; Biome and TypeScript use the installed revision.
+After changing those presets, push dots first and update consumer dependencies
+and lockfiles to the new commit. The root TypeScript config extends the dots
+submodule directly.
+
+Files without native inheritance live under `dots/templates/`, plus
+`dots/package-scripts.json` and `dots/release-please.json`.
 
 ```bash
-bun run configs:sync     # regenerate package-local configs
-bun run configs:check    # fail on drift without writing
+bun run configs:sync     # update standalone templates and config entrypoints
+bun run configs:check    # check for drift without writing
 ```
 
-Package-local copies remain tracked so standalone clones and GitHub automation
-work without the parent repository. This deduplicates the maintained source;
-generated copies are intentional. Review sync diffs before committing, including
-any dependency-bot changes that should be brought back into the shared source.
-Common package scripts live in `shared/package-scripts.json`; common Release
-Please settings live in `shared/release-please.json`. Sync preserves package
-identity, dependencies, versions, custom scripts, and bootstrap SHAs. Root
-`.gitattributes` also supplies the package copies. Release verification tests
-are maintained with the shared verification script in `shared/package/`.
-AGENTS.md files remain independently maintained. Package lockfiles stay separate; this is not a
-Bun workspace that replaces their dependency resolution.
+Package identities, dependencies, release versions, bootstrap SHAs, and custom
+scripts remain independent. Each package retains its own lockfile.
 
-## Git workflow
+## Git and package operations
 
-Commit package changes in their own repositories first. Then stage the changed
-submodule paths in this repository to record their new commit IDs, alongside
-shared-config changes. Push package commits before pushing the superproject so
-other clones can fetch every pinned commit. `git diff --submodule` shows pointer
-changes; `git submodule foreach git status --short` shows package working changes.
+Commit and push changed submodules first, then commit their updated pointers
+in this repository. `git diff --submodule` shows pointer changes;
+`git submodule foreach git status --short` shows package working changes.
 
-For an existing clone, use `git submodule update --init --recursive`. Fresh
-submodules use detached HEADs; check out the intended package branch before editing.
-The existing local package branches are preserved.
+For an existing clone, run `git submodule update --init --recursive`. Fresh
+submodules use detached HEADs; check out the intended branch before editing.
 
-## Package operations
+The pipeline drives the three runtime packages:
 
 ```bash
 bun run pipeline help
@@ -58,6 +55,4 @@ bun run pipeline release --project=all
 bun run pipeline retry --project=logger --run=<run-id>
 ```
 
-See the shared [release policy](shared/package/.github/RELEASE_POLICY.md) for
-release setup and recovery. Commit shared changes in every affected package,
-then update the root submodule pointers after pushing those commits.
+See the shared [release policy](dots/templates/.github/RELEASE_POLICY.md).

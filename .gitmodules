@@ -7,3 +7,6 @@
 [submodule "toolkit"]
 	path = toolkit
 	url = https://github.com/lilsnibbi/toolkit.git
+[submodule "dots"]
+	path = dots
+	url = https://github.com/lilsnibbi/dots.git
