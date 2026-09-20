@@ -16,9 +16,9 @@ bun run check
 ## Shared configuration
 
 Edit `shared/package/` for common Biome, TypeScript, Git ignore/attributes,
-CI, release workflow/policy, and release verification files. Edit
-`shared/renovate/base.json` for common Renovate rules and
-`shared/renovate/discord-kit.json` for Discord-specific rules.
+CI, release workflow/policy, and release verification files. Renovate uses
+the same `shared/package/renovate.json` in every package, with common tooling,
+GitHub Actions, and major-update rules.
 
 ```bash
 bun run configs:sync     # regenerate package-local configs

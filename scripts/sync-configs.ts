@@ -9,7 +9,6 @@ const template = join(root, "shared/package");
 const files = (await readdir(template, { recursive: true, withFileTypes: true }))
 	.filter((entry) => entry.isFile())
 	.map((entry) => join(entry.parentPath, entry.name).slice(template.length + 1));
-const base = await Bun.file(join(root, "shared/renovate/base.json")).json();
 const scripts = await Bun.file(join(root, "shared/package-scripts.json")).json();
 const release = await Bun.file(join(root, "shared/release-please.json")).json();
 const attributes = await Bun.file(join(root, ".gitattributes")).text();
@@ -67,14 +66,6 @@ for (const name of packages) {
 		...release,
 		packages: { ...release.packages, ...currentRelease.packages },
 	});
-	const overrideFile = Bun.file(join(root, "shared/renovate", `${name}.json`));
-	const override = (await overrideFile.exists()) ? await overrideFile.json() : {};
-	const config = {
-		...base,
-		...override,
-		packageRules: [...base.packageRules, ...(override.packageRules ?? [])],
-	};
-	await syncJson(`${name}/renovate.json`, config);
 }
 console.log(differences ? `${differences} config file(s) ${check ? "differ" : "updated"}.` : "Shared configs are in sync.");
 if (check && differences) process.exit(1);
