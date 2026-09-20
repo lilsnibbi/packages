@@ -1,13 +1,13 @@
 /**
  * Release / workflow driver for the @lilsnibbi packages.
  *
- *   bun pipeline.ts release --project=logger     # show pending Release Please PRs
- *   bun pipeline.ts retry   --project=logger --run=123456     # retry failed Release jobs
- *   bun pipeline.ts ci      --project=all                     # gh workflow run ci.yml
- *   bun pipeline.ts status  [--project=all]                   # recent workflow runs
- *   bun pipeline.ts check   --project=all                     # bun run check locally
- *   bun pipeline.ts pull    --project=all                     # git pull --ff-only
- *   bun pipeline.ts bootstrap --project=logger                # first commit on main, create GitHub repo, push
+ *   bun run pipeline release --project=logger     # show pending Release Please PRs
+ *   bun run pipeline retry   --project=logger --run=123456     # retry failed Release jobs
+ *   bun run pipeline ci      --project=all                     # gh workflow run ci.yml
+ *   bun run pipeline status  [--project=all]                   # recent workflow runs
+ *   bun run pipeline check   --project=all                     # bun run check locally
+ *   bun run pipeline pull    --project=all                     # git pull --ff-only
+ *   bun run pipeline bootstrap --project=logger                # first commit on main, create GitHub repo, push
  *
  * Flags: --project=all|discord-kit|logger|toolkit (comma list ok), --run, --dry-run, --verbose
  */
@@ -50,7 +50,7 @@ const pad = (text: string, size: number) => text + " ".repeat(Math.max(0, size -
 
 // ---- domain -----------------------------------------------------------------
 
-const ROOT = import.meta.dir;
+const ROOT = join(import.meta.dir, "..");
 const PROJECTS = ["discord-kit", "logger", "toolkit"] as const;
 type Project = (typeof PROJECTS)[number];
 
@@ -87,7 +87,7 @@ function help(): void {
 	console.log();
 	console.log(`  ${bold("pipeline")} ${dim("— release driver for @lilsnibbi packages")}`);
 	console.log();
-	console.log(`  ${dim("usage")}  bun pipeline.ts ${cyan("<command>")} ${yellow("--project=<all|name,…>")} ${gray("[--run=…] [--dry-run] [--verbose]")}`);
+	console.log(`  ${dim("usage")}  bun run pipeline ${cyan("<command>")} ${yellow("--project=<all|name,…>")} ${gray("[--run=…] [--dry-run] [--verbose]")}`);
 	console.log();
 	console.log(`  ${dim("commands")}`);
 	for (const [name, description] of Object.entries(COMMANDS)) {
@@ -98,16 +98,16 @@ function help(): void {
 	console.log(`  ${dim("verbose")}   ${gray("show the underlying git / gh commands and full errors")}`);
 	console.log();
 	console.log(`  ${dim("examples")}`);
-	console.log(`    ${gray("$")} bun pipeline.ts release --project=logger`);
-	console.log(`    ${gray("$")} bun pipeline.ts retry --project=logger --run=123456`);
-	console.log(`    ${gray("$")} bun pipeline.ts bootstrap --project=all --dry-run`);
+	console.log(`    ${gray("$")} bun run pipeline release --project=logger`);
+	console.log(`    ${gray("$")} bun run pipeline retry --project=logger --run=123456`);
+	console.log(`    ${gray("$")} bun run pipeline bootstrap --project=all --dry-run`);
 	console.log();
 }
 
 function fail(message: string): never {
 	console.log();
 	console.log(`  ${ICON.fail} ${red(message)}`);
-	console.log(`  ${gray("run")} bun pipeline.ts help`);
+	console.log(`  ${gray("run")} bun run pipeline help`);
 	console.log();
 	process.exit(1);
 }

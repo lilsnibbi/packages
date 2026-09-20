@@ -29,8 +29,12 @@ Package-local copies remain tracked so standalone clones and GitHub automation
 work without the parent repository. This deduplicates the maintained source;
 generated copies are intentional. Review sync diffs before committing, including
 any dependency-bot changes that should be brought back into the shared source.
-Package manifests, release versions, Release Please bootstrap SHAs, and AGENTS.md
-remain independently maintained. Package lockfiles stay separate; this is not a
+Common package scripts live in `shared/package-scripts.json`; common Release
+Please settings live in `shared/release-please.json`. Sync preserves package
+identity, dependencies, versions, custom scripts, and bootstrap SHAs. Root
+`.gitattributes` also supplies the package copies. Release verification tests
+are maintained with the shared verification script in `shared/package/`.
+AGENTS.md files remain independently maintained. Package lockfiles stay separate; this is not a
 Bun workspace that replaces their dependency resolution.
 
 ## Git workflow
@@ -45,4 +49,15 @@ For an existing clone, use `git submodule update --init --recursive`. Fresh
 submodules use detached HEADs; check out the intended package branch before editing.
 The existing local package branches are preserved.
 
-See [RELEASING.md](RELEASING.md) for the package release flow.
+## Package operations
+
+```bash
+bun run pipeline help
+bun run pipeline status
+bun run pipeline release --project=all
+bun run pipeline retry --project=logger --run=<run-id>
+```
+
+See the shared [release policy](shared/package/.github/RELEASE_POLICY.md) for
+release setup and recovery. Commit shared changes in every affected package,
+then update the root submodule pointers after pushing those commits.
