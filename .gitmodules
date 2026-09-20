@@ -1,0 +1,9 @@
+[submodule "discord-kit"]
+	path = discord-kit
+	url = https://github.com/lilsnibbi/discord-kit.git
+[submodule "logger"]
+	path = logger
+	url = https://github.com/lilsnibbi/logger.git
+[submodule "toolkit"]
+	path = toolkit
+	url = https://github.com/lilsnibbi/toolkit.git

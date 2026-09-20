@@ -1,0 +1,19 @@
+{
+  "name": "lilsnibbi-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pipeline": "bun pipeline.ts",
+    "typecheck": "bun tsc --noEmit",
+    "configs:sync": "bun scripts/sync-configs.ts",
+    "configs:check": "bun scripts/sync-configs.ts --check",
+    "check": "bun run configs:check && bun run typecheck && bun pipeline.ts check --project=all"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  }
+}
