@@ -10,7 +10,7 @@
     "check": "bun run configs:check && bun run typecheck && bun run pipeline check --project=all"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.12",
+    "@biomejs/biome": "2.5.14",
     "@types/bun": "latest"
   },
   "peerDependencies": {
