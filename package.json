@@ -1,0 +1,25 @@
+{
+	"name": "lilsnibbi-packages",
+	"private": true,
+	"type": "module",
+	"packageManager": "bun@1.4.2",
+	"workspaces": [
+		"toolkit",
+		"logger",
+		"discord-kit"
+	],
+	"scripts": {
+		"typecheck": "bun tsc --noEmit",
+		"test": "bun test",
+		"lint": "bun biome check .",
+		"pretty": "bun biome format --write .",
+		"audit": "bun audit --audit-level=high",
+		"release:verify": "bun scripts/verifyRelease.ts",
+		"check": "bun run typecheck && bun run test && bun run release:verify && bun run lint"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
+		"@types/bun": "1.4.2",
+		"typescript": "7.0.2"
+	}
+}

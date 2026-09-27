@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  workflow_call:
+    secrets:
+      RELEASE_TOKEN:
+        required: true
+      NPM_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tags: >-
+        {"toolkit":"${{ steps.release.outputs['toolkit--tag_name'] }}",
+        "logger":"${{ steps.release.outputs['logger--tag_name'] }}",
+        "discord-kit":"${{ steps.release.outputs['discord-kit--tag_name'] }}"}
+    steps:
+      - name: Check verified commit is still main
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          current="$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)"
+          if [ "$current" = "$EXPECTED_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Require release credentials
+        if: steps.head.outputs.current == 'true'
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: test -n "$RELEASE_TOKEN"
+      - name: Create release PR or GitHub releases
+        if: steps.head.outputs.current == 'true'
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          target-branch: main
+      - name: Check out release PR
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - name: Set up Bun
+        if: steps.release.outputs.prs_created == 'true'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.2
+      - name: Update release PR lockfile
+        if: steps.release.outputs.prs_created == 'true'
+        run: |
+          bun install --lockfile-only --ignore-scripts
+          if ! git diff --quiet -- bun.lock; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bun.lock
+            git commit -m "chore: update release lockfile"
+            git push
+          fi
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.2
+      - name: Verify and publish released packages in dependency order
+        env:
+          RELEASE_TAGS: ${{ needs.release-please.outputs.tags }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+        run: |
+          test -n "$NPM_CONFIG_TOKEN"
+          for package in toolkit logger discord-kit; do
+            tag="$(jq -r --arg key "$package" '.[$key]' <<< "$RELEASE_TAGS")"
+            [ -n "$tag" ] || continue
+            git checkout --detach "$tag"
+            bun install --frozen-lockfile
+            bun run check
+            bun run release:verify "$package" "$tag"
+            bun run audit
+            (cd "$package" && bun publish --access public --tolerate-republish)
+          done
