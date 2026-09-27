@@ -36,7 +36,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"discord.js": "^14.27.0"
+		"discord.js": "14.27.0"
 	},
 	"scripts": {
 		"postpack": "bun ../scripts/license.ts --clean",
