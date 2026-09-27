@@ -79,7 +79,16 @@ test("all published archives install together and expose their public APIs", asy
 		}
 		await Bun.write(
 			join(temporary, "package.json"),
-			JSON.stringify({ private: true, type: "module", dependencies }),
+			JSON.stringify({
+				private: true,
+				type: "module",
+				dependencies,
+				overrides: Object.fromEntries(
+					Object.entries(dependencies).filter(([name]) =>
+						name.startsWith("@lilsnibbi/"),
+					),
+				),
+			}),
 		);
 		const install = Bun.spawnSync(
 			[process.execPath, "install", "--ignore-scripts"],

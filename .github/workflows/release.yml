@@ -6,7 +6,7 @@ on:
       RELEASE_TOKEN:
         required: true
       NPM_TOKEN:
-        required: true
+        required: false
 
 permissions:
   contents: read
