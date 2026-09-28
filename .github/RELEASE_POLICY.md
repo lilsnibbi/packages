@@ -5,8 +5,8 @@ version and changelog for each package. Workspace dependencies use `workspace:^`
 update dependent packages when a dependency requires a new release.
 Tags are helpers-vX.Y.Z, logger-vX.Y.Z and discord-vX.Y.Z.
 
-CI checks Windows and Linux before the Release workflow runs. Release PRs also receive
-a regenerated Bun lockfile. Merge only after both Verify checks pass.
+The Release workflow checks Windows and Linux before running Release Please.
+Release PRs receive a regenerated Bun lockfile. Merge only after both Verify checks pass.
 Publishing checks out each released tag and publishes helpers, logger, then discord.
 Each archive includes source, its manifest and README, and the shared MIT license.
 
