@@ -12,7 +12,7 @@
     },
     "discord": {
       "name": "@lilsnibbi/discord",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "dependencies": {
         "@lilsnibbi/logger": "workspace:^",
       },
