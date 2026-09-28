@@ -4,9 +4,9 @@
 	"type": "module",
 	"packageManager": "bun@1.4.2",
 	"workspaces": [
-		"toolkit",
+		"helpers",
 		"logger",
-		"discord-kit"
+		"discord"
 	],
 	"scripts": {
 		"typecheck": "bun tsc --noEmit",

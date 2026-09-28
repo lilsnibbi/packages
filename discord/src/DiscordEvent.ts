@@ -8,7 +8,7 @@ import type { Client, ClientEvents, RestEvents } from "discord.js";
  *
  * @example
  * ```ts
- * declare module "@lilsnibbi/discord-kit" {
+ * declare module "@lilsnibbi/discord" {
  *   interface DiscordEventCustomType {
  *     myEvent: [data: string];
  *   }

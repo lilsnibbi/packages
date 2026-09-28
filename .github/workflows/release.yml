@@ -1,12 +1,9 @@
 name: Release
 
 on:
-  workflow_call:
-    secrets:
-      RELEASE_TOKEN:
-        required: true
-      NPM_TOKEN:
-        required: false
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 permissions:
   contents: read
@@ -17,21 +14,26 @@ concurrency:
 
 jobs:
   release-please:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       tags: >-
-        {"toolkit":"${{ steps.release.outputs['toolkit--tag_name'] }}",
+        {"helpers":"${{ steps.release.outputs['helpers--tag_name'] }}",
         "logger":"${{ steps.release.outputs['logger--tag_name'] }}",
-        "discord-kit":"${{ steps.release.outputs['discord-kit--tag_name'] }}"}
+        "discord":"${{ steps.release.outputs['discord--tag_name'] }}"}
     steps:
       - name: Check verified commit is still main
         id: head
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           current="$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)"
           if [ "$current" = "$EXPECTED_SHA" ]; then
@@ -51,34 +53,42 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           target-branch: main
-      - name: Check out release PR
+      - name: Check out repository
         if: steps.release.outputs.prs_created == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
           token: ${{ secrets.RELEASE_TOKEN }}
       - name: Set up Bun
         if: steps.release.outputs.prs_created == 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.2
-      - name: Update release PR lockfile
+      - name: Update each release PR lockfile
         if: steps.release.outputs.prs_created == 'true'
+        env:
+          RELEASE_PRS: ${{ steps.release.outputs.prs }}
         run: |
-          bun install --lockfile-only --ignore-scripts
-          if ! git diff --quiet -- bun.lock; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add bun.lock
-            git commit -m "chore: update release lockfile"
-            git push
-          fi
+          jq -r '.[].headBranchName' <<< "$RELEASE_PRS" | while IFS= read -r branch; do
+            git fetch origin "$branch"
+            git checkout -B "$branch" "origin/$branch"
+            bun install --lockfile-only --ignore-scripts
+            if ! git diff --quiet -- bun.lock; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add bun.lock
+              git commit -m "chore: update release lockfile"
+              git push origin "HEAD:$branch"
+            fi
+          done
 
   publish:
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -87,14 +97,18 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.2
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Set up npm Trusted Publishing client
+        run: npm install --global npm@11.13.0
       - name: Verify and publish released packages in dependency order
         env:
           RELEASE_TAGS: ${{ needs.release-please.outputs.tags }}
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          test -n "$NPM_CONFIG_TOKEN"
-          for package in toolkit logger discord-kit; do
+          for package in helpers logger discord; do
             tag="$(jq -r --arg key "$package" '.[$key]' <<< "$RELEASE_TAGS")"
             [ -n "$tag" ] || continue
             git checkout --detach "$tag"
@@ -102,5 +116,13 @@ jobs:
             bun run check
             bun run release:verify "$package" "$tag"
             bun run audit
-            (cd "$package" && bun publish --access public --tolerate-republish)
+            name="$(jq -r .name "$package/package.json")"
+            version="$(jq -r .version "$package/package.json")"
+            if npm view "$name@$version" version --json >/dev/null 2>&1; then
+              echo "$name@$version is already published"
+              continue
+            fi
+            archive="$RUNNER_TEMP/$package-$version.tgz"
+            (cd "$package" && bun pm pack --filename "$archive")
+            npm publish "$archive" --access public
           done

@@ -29,7 +29,7 @@ export type CommandInteraction =
  *
  * @example
  * ```ts
- * declare module "@lilsnibbi/discord-kit" {
+ * declare module "@lilsnibbi/discord" {
  *   interface DiscordCommandMetadata {
  *     cooldown?: number;
  *     category?: string;

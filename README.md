@@ -1,6 +1,6 @@
 # @lilsnibbi
 
-Bun packages: `toolkit`, `logger`, `discord-kit`.
+Bun packages: `helpers`, `logger`, `discord`.
 
 ```sh
 bun install --frozen-lockfile

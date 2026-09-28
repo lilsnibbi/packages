@@ -1,4 +1,4 @@
-import { truncate } from "@lilsnibbi/toolkit";
+import { truncate } from "@lilsnibbi/helpers";
 import { formatError } from "../core/formatError";
 import { inlineErrors } from "../core/inlineErrors";
 import { LogFile } from "./LogFile";

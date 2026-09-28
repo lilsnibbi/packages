@@ -1,5 +1,5 @@
 /**
- * Entry point for `@lilsnibbi/discord-kit`.
+ * Entry point for `@lilsnibbi/discord`.
  *
  * Requires the `discord.js` peer dependency. The client publishes itself to
  * `container`, and the command, event and pagination structures are the pieces

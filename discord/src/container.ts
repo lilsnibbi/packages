@@ -9,7 +9,7 @@ import type { DiscordClient } from "./DiscordClient";
  *
  * @example
  * ```ts
- * declare module "@lilsnibbi/discord-kit" {
+ * declare module "@lilsnibbi/discord" {
  *   interface Container {
  *     db: Database;
  *   }
@@ -30,7 +30,7 @@ export interface Container {
  *
  * @example
  * ```ts
- * import { container } from "@lilsnibbi/discord-kit";
+ * import { container } from "@lilsnibbi/discord";
  *
  * container.client.log.notif("ready");
  * ```

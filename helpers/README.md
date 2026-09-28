@@ -1,4 +1,4 @@
-# toolkit
+# helpers
 
 My Bun utility functions.
 

@@ -44,7 +44,7 @@ export interface DiscordClientCustomOptions {
 
 /** discord.js options plus the client's own settings. */
 export interface DiscordClientOptions extends ClientOptions {
-	/** Settings specific to discord-kit. */
+	/** Settings specific to the Discord package. */
 	custom: DiscordClientCustomOptions;
 }
 

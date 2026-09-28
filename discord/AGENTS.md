@@ -1,4 +1,4 @@
-# Discord kit
+# Discord
 
 Bun client, command, event and pagination structures. discord.js is a required peer;
 logger is a workspace runtime dependency. Preserve module augmentation and event overloads.

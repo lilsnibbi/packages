@@ -3,21 +3,21 @@ import { verifyRelease } from "../scripts/verifyRelease";
 
 describe("release metadata", () => {
 	const manifest = { version: "1.2.3", license: "MIT" };
-	const versions = { logger: "1.2.3", toolkit: "1.2.2" };
+	const versions = { logger: "1.2.3", helpers: "1.2.2" };
 	test("accepts matching package metadata and component tag", () => {
 		expect(() =>
 			verifyRelease("logger", manifest, versions, "logger-v1.2.3"),
 		).not.toThrow();
 	});
 	test("rejects missing or stale package versions", () => {
-		for (const name of ["toolkit", "discord-kit"]) {
+		for (const name of ["helpers", "discord"]) {
 			expect(() => verifyRelease(name, manifest, versions)).toThrow(
 				"versions must match",
 			);
 		}
 	});
 	test("rejects another package's tag, old unscoped tags and wrong versions", () => {
-		for (const tag of ["toolkit-v1.2.3", "v1.2.3", "logger-v1.2.4"]) {
+		for (const tag of ["helpers-v1.2.3", "v1.2.3", "logger-v1.2.4"]) {
 			expect(() => verifyRelease("logger", manifest, versions, tag)).toThrow(
 				"does not match",
 			);

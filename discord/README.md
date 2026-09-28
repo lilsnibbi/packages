@@ -1,4 +1,4 @@
-# discord-kit
+# discord
 
 My Discord client, commands, events and pagination helpers.
 

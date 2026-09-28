@@ -1,4 +1,4 @@
-# Toolkit
+# Helpers
 
 Dependency-free Bun helpers. One helper per camelCase file, exported from src/index.ts.
 Preserve signatures and edge cases. Validate numeric bounds with RangeError,

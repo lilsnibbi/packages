@@ -1,7 +1,7 @@
 {
-	"name": "@lilsnibbi/discord-kit",
+	"name": "@lilsnibbi/helpers",
 	"version": "1.0.1",
-	"description": "Client, command, event and pagination structures for discord.js bots on the Bun runtime.",
+	"description": "Small TypeScript helper functions for the Bun runtime.",
 	"license": "MIT",
 	"private": false,
 	"type": "module",
@@ -24,19 +24,10 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/lilsnibbi/packages.git",
-		"directory": "discord-kit"
-	},
-	"dependencies": {
-		"@lilsnibbi/logger": "workspace:^"
-	},
-	"peerDependencies": {
-		"discord.js": "^14.27.0"
+		"directory": "helpers"
 	},
 	"publishConfig": {
 		"access": "public"
-	},
-	"devDependencies": {
-		"discord.js": "14.27.0"
 	},
 	"scripts": {
 		"postpack": "bun ../scripts/license.ts --clean",

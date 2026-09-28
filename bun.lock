@@ -10,8 +10,8 @@
         "typescript": "7.0.2",
       },
     },
-    "discord-kit": {
-      "name": "@lilsnibbi/discord-kit",
+    "discord": {
+      "name": "@lilsnibbi/discord",
       "version": "1.0.1",
       "dependencies": {
         "@lilsnibbi/logger": "workspace:^",
@@ -23,16 +23,16 @@
         "discord.js": "^14.27.0",
       },
     },
+    "helpers": {
+      "name": "@lilsnibbi/helpers",
+      "version": "1.0.1",
+    },
     "logger": {
       "name": "@lilsnibbi/logger",
       "version": "1.1.1",
       "dependencies": {
-        "@lilsnibbi/toolkit": "workspace:^",
+        "@lilsnibbi/helpers": "workspace:^",
       },
-    },
-    "toolkit": {
-      "name": "@lilsnibbi/toolkit",
-      "version": "1.0.1",
     },
   },
   "packages": {
@@ -66,11 +66,11 @@
 
     "@discordjs/ws": ["@discordjs/ws@1.2.3", "", { "dependencies": { "@discordjs/collection": "^2.1.0", "@discordjs/rest": "^2.5.1", "@discordjs/util": "^1.1.0", "@sapphire/async-queue": "^1.5.2", "@types/ws": "^8.5.10", "@vladfrangu/async_event_emitter": "^2.2.4", "discord-api-types": "^0.38.1", "tslib": "^2.6.2", "ws": "^8.17.0" } }, "sha512-wPlQDxEmlDg5IxhJPuxXr3Vy9AjYq5xCvFWGJyD7w7Np8ZGu+Mc+97LCoEc/+AYCo2IDpKioiH0/c/mj5ZR9Uw=="],
 
-    "@lilsnibbi/discord-kit": ["@lilsnibbi/discord-kit@workspace:discord-kit"],
+    "@lilsnibbi/discord": ["@lilsnibbi/discord@workspace:discord"],
+
+    "@lilsnibbi/helpers": ["@lilsnibbi/helpers@workspace:helpers"],
 
     "@lilsnibbi/logger": ["@lilsnibbi/logger@workspace:logger"],
-
-    "@lilsnibbi/toolkit": ["@lilsnibbi/toolkit@workspace:toolkit"],
 
     "@sapphire/async-queue": ["@sapphire/async-queue@1.5.5", "", {}, "sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg=="],
 

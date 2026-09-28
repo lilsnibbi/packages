@@ -1,18 +1,18 @@
 {
 	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
 	"release-type": "node",
+	"separate-pull-requests": true,
 	"include-component-in-tag": true,
 	"include-v-in-tag": true,
-	"plugins": ["node-workspace"],
 	"packages": {
-		"toolkit": {
-			"component": "toolkit"
+		"helpers": {
+			"component": "helpers"
 		},
 		"logger": {
 			"component": "logger"
 		},
-		"discord-kit": {
-			"component": "discord-kit"
+		"discord": {
+			"component": "discord"
 		}
 	}
 }

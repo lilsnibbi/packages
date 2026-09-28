@@ -22,8 +22,8 @@
 	"include": [
 		"scripts/**/*.ts",
 		"tests/**/*.ts",
-		"toolkit/**/*.ts",
+		"helpers/**/*.ts",
 		"logger/**/*.ts",
-		"discord-kit/**/*.ts"
+		"discord/**/*.ts"
 	]
 }

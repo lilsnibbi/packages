@@ -30,7 +30,7 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@lilsnibbi/toolkit": "workspace:^"
+		"@lilsnibbi/helpers": "workspace:^"
 	},
 	"scripts": {
 		"postpack": "bun ../scripts/license.ts --clean",

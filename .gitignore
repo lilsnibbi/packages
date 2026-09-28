@@ -1,8 +1,8 @@
 # dependencies (bun install)
 node_modules
-/toolkit/LICENSE
+/helpers/LICENSE
 /logger/LICENSE
-/discord-kit/LICENSE
+/discord/LICENSE
 
 # output
 out

@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import workspace from "../package.json";
-import discord from "../discord-kit/package.json";
+import discord from "../discord/package.json";
 
 test("all published archives install together and expose their public APIs", async () => {
 	const root = resolve(import.meta.dir, "..");
@@ -12,7 +12,7 @@ test("all published archives install together and expose their public APIs", asy
 		"discord.js": discord.devDependencies["discord.js"],
 	};
 	const expected: Record<string, string[]> = {
-		toolkit: [
+		helpers: [
 			"chunk",
 			"clamp",
 			"formatBytes",
@@ -25,7 +25,7 @@ test("all published archives install together and expose their public APIs", asy
 			"truncate",
 		],
 		logger: ["Logger", "LogFile", "formatError", "paint", "stripAnsi"],
-		"discord-kit": [
+		discord: [
 			"DiscordClient",
 			"DiscordCommand",
 			"DiscordEvent",

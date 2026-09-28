@@ -1,5 +1,5 @@
 /**
- * Entry point for `@lilsnibbi/toolkit`.
+ * Entry point for `@lilsnibbi/helpers`.
  *
  * Small, dependency-free helper functions. Each lives in its own file and is
  * re-exported here; import from the package root.

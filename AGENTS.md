@@ -4,7 +4,7 @@ Keep responses minimal. Use Bun.
 Never commit, push, tag, publish, or run release automation unless explicitly requested.
 Preserve existing user changes and public APIs.
 
-One Git repository on main, with three Bun workspaces: toolkit, logger and discord-kit.
+One Git repository on main, with three Bun workspaces: helpers, logger and discord.
 Read each package's AGENTS.md before changing it. Shared tooling, lockfile,
 configuration, release checks and Actions live at the root; do not duplicate them.
 Packages ship TypeScript source from src/index.ts. Keep package.json files allowlists narrow.
