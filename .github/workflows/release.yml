@@ -102,7 +102,7 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - name: Set up npm Trusted Publishing client
-        run: npm install --global npm@11.13.0
+        run: npm install --global npm@11.15.0
       - name: Verify and publish released packages in dependency order
         env:
           RELEASE_TAGS: ${{ needs.release-please.outputs.tags }}
