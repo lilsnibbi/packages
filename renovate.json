@@ -5,7 +5,9 @@
 	"baseBranchPatterns": ["$default"],
 	"reviewers": ["lilsnibbi"],
 	"labels": ["dependencies", "renovate"],
-	"dependencyDashboardLabels": ["dependencies", "renovate"],
+	"dependencyDashboard": {
+		"labels": ["dependencies", "renovate"]
+	},
 	"prCreation": "immediate",
 	"automerge": false,
 	"vulnerabilityAlerts": {
